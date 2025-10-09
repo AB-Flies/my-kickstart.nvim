@@ -129,7 +129,7 @@ vim.o.ignorecase = true
 vim.o.smartcase = true
 
 -- Keep signcolumn on by default
-vim.o.signcolumn = 'yes'
+vim.o.signcolumn = 'yes:k'
 
 -- Decrease update time
 vim.o.updatetime = 250
@@ -275,7 +275,7 @@ require('lazy').setup({
     'lewis6991/gitsigns.nvim',
     opts = {
       signs = {
-        add = { text = '+' },
+        add = { text = ' +' },
         change = { text = '~' },
         delete = { text = '_' },
         topdelete = { text = '‾' },
@@ -910,17 +910,18 @@ require('lazy').setup({
       -- keywords recognized as todo comments
       keywords = {
         FIX = {
-          icon = ' ', -- icon used for the sign, and in search results
+          icon = ' ', -- icon used for the sign, and in search results
           color = 'error', -- can be a hex color, or a named color (see below)
           alt = { 'FIXME', 'BUG', 'FIXIT', 'ISSUE' }, -- a set of other keywords that all map to this FIX keywords
           -- signs = false, -- configure signs for some keywords individually
         },
-        TODO = { icon = ' ', color = 'info' },
-        HACK = { icon = ' ', color = 'warning' },
-        WARN = { icon = ' ', color = 'warning', alt = { 'WARNING', 'XXX' } },
-        PERF = { icon = ' ', alt = { 'OPTIM', 'PERFORMANCE', 'OPTIMIZE' } },
-        NOTE = { icon = ' ', color = 'hint', alt = { 'INFO' } },
-        TEST = { icon = '⏲ ', color = 'test', alt = { 'TESTING', 'PASSED', 'FAILED' } },
+        -- TODO:
+        TODO = { icon = ' ', color = 'info' },
+        HACK = { icon = ' ', color = 'warning' },
+        WARN = { icon = ' ', color = 'warning', alt = { 'WARNING', 'XXX' } },
+        PERF = { icon = ' ', alt = { 'OPTIM', 'PERFORMANCE', 'OPTIMIZE' } },
+        NOTE = { icon = ' ', color = 'hint', alt = { 'INFO' } },
+        TEST = { icon = ' ⏲', color = 'test', alt = { 'TESTING', 'PASSED', 'FAILED' } },
       },
     },
   },
