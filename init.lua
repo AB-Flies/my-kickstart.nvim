@@ -1048,7 +1048,7 @@ require('lazy').setup({
   },
 })
 
-vim.opt.editorconfig = true
+vim.g.editorconfig = true
 
 vim.cmd.colorscheme 'catppuccin-mocha'
 -- The line beneath this is called `modeline`. See `:help modeline`
