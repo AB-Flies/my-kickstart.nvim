@@ -845,6 +845,9 @@ require('lazy').setup({
         -- See :h blink-cmp-config-keymap for defining your own keymap
         preset = 'default',
 
+        ['<C-y>'] = { 'show', 'show_documentation', 'hide_documentation' },
+        ['<C-space>'] = { 'select_and_accept', 'fallback' },
+
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
       },
@@ -1044,6 +1047,8 @@ require('lazy').setup({
     },
   },
 })
+
+vim.opt.editorconfig = true
 
 vim.cmd.colorscheme 'catppuccin-mocha'
 -- The line beneath this is called `modeline`. See `:help modeline`
