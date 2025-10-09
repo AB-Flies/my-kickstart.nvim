@@ -1,3 +1,7 @@
+local function relpath(path)
+  return vim.fn.fnamemodify(debug.getinfo(1, 'S').source:sub(2), ':h') .. '/' .. path
+end
+
 -- You can add your own plugins here or in other files in this directory!
 --  I promise not to create any merge conflicts in this directory :)
 --
@@ -6,12 +10,11 @@ return {
   { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
   {
     'iamcco/markdown-preview.nvim',
-    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-    build = 'cd app && yarn install',
-    init = function()
-      vim.g.mkdp_filetypes = { 'markdown' }
-    end,
+    build = 'cd app && npm install',
     ft = { 'markdown' },
+    init = function()
+      vim.g.mkdp_auto_start = 0 -- set to 1 if you want auto preview
+    end,
   },
   {
     'nvim-tree/nvim-tree.lua',
@@ -24,4 +27,5 @@ return {
       require('nvim-tree').setup {}
     end,
   },
+  { dir = relpath 'MyConfManager.nvim/' },
 }
