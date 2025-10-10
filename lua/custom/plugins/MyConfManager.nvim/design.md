@@ -23,7 +23,7 @@ All of these functions will be prefixed with MyConfManager.
 - **Untrust**: Untrusts a path
 - **Trust**: Adds a path to the list of trusted paths
 
-- **ChangeConfFileName**: Changes the name of the conf files to look for
+- **ChangeName**: Changes the name of the conf files to look for
 
 ## Additional noteworthy features
 - Failsafe for files with 200 (default value) lines or more: Pop up asking whether to continue or cancel

@@ -27,5 +27,12 @@ return {
       require('nvim-tree').setup {}
     end,
   },
-  { dir = relpath 'MyConfManager.nvim/' },
+  {
+    dir = relpath 'MyConfManager.nvim/',
+    init = function()
+      require('MyConfManager').setup { max_config_size = 3 }
+    end,
+  },
 }
+
+--

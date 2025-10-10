@@ -1,70 +1,125 @@
 local M = {}
 
-local dirName = vim.fn.stdpath 'data' .. '/MyConfManager'
-local fileName = dirName .. '/trusted.json'
+---@class Path
+---@field path string
+---@field is_tree boolean
 
-local function loadData()
-  local file, err = io.open(fileName, 'r+')
-  local empty = {}
+local fs = require 'utils.fs'
+local name = '.nvim.lua'
+local choices = {
+  '1. Load and trust current directory tree',
+  '2. Load and trust current directory',
+  '3. Load',
+  '4. Ignore',
+}
+local max_config_size = 5 * 1024 -- Around > 1.250 lines
+local autoload = true
 
-  if not file then
-    file, err = io.open(fileName, 'w+')
+---@param table Path[]
+---@param value string The path to search
+---@param cmp_fnc function receives a Path and a string, respectively
+---@return integer|nil
+local function find(table, value, cmp_fnc)
+  cmp_fnc = cmp_fnc or function(a, b)
+    return a == b
+  end
 
-    if not file then
-      vim.notify(('loadData: could not open or create %s: %s'):format(fileName, err), vim.log.levels.ERROR)
-      return empty
+  for i = 1, #table do
+    if cmp_fnc(table[i], value) then
+      return i
     end
   end
 
-  local content = file:read '*a'
-  file:close()
-
-  if not content or content == '' then
-    return empty
-  end
-
-  local ok, parsed = pcall(vim.fn.json_decode, content)
-  if not ok then
-    vim.notify(('Reader: invalid JSON in %s: %s'):format(fileName, parsed), vim.log.levels.WARN)
-    return empty
-  end
-
-  return parsed
+  return nil
 end
 
-local function writeData(obj)
-  local ok, content = pcall(vim.fn.json_encode, obj)
-  if not ok then
-    vim.notify('writeData: could not encode the table. data has not been saved.', vim.log.levels.ERROR)
+local function load(path, stat)
+  if stat.size > max_config_size then
+    vim.ui.select({ 'continue', 'cancel' }, {
+      prompt = ("The config file's size exceeds the limit (%sb): %sb. What to do?"):format(max_config_size, stat.size),
+    }, function(choice)
+      if choice == 'cancel' then
+        return
+      else
+        dofile(path)
+      end
+    end)
+  end
+end
+
+local function checkFile(force)
+  if not autoload and not force then
+    return
   end
 
-  local file, err = io.open(fileName, 'w+')
+  local path = vim.fn.getcwd() .. '/' .. name
+  local stat = vim.uv.fs_stat(path)
 
-  if not file then
-    vim.notify(('writeData: could not open or create %s: %s. Please check backup: %s'):format(fileName, err, fileName .. '.backup'), vim.log.levels.ERROR)
+  if stat == nil then
     return false
   else
-    file:write(content)
-    file:flush()
-    file:close()
-  end
+    ---@type Path[]
+    local data = fs.loadData()
+    local i = find(data, vim.fn.getcwd(), function(_path, str)
+      if _path.is_tree then
+        return not (string.find(_path.path, str, 1, true) == nil)
+      else
+        return _path.path == str
+      end
+    end)
 
-  local backup, b_err = io.open(fileName .. '.backup', 'w+')
-  if not backup then
-    vim.notify(('writeData: could not open or create %s: %s. Backup could not be saved'):format(fileName .. '.backup', b_err), vim.log.levels.WARN)
-    return false
+    if i ~= nil then
+      load(path, stat)
+    else
+      -- The select starts with an 'A' pressed. This is to flush the buffer
+      while vim.fn.getchar(0) ~= 0 do
+      end
+      vim.ui.select(choices, {
+        prompt = 'A local config file has been found in the cwd. What should be done?',
+      }, function(choice)
+        if choice == choices[4] then
+          return
+        end
+
+        load(path, stat)
+
+        if choice == choices[1] then
+          table.insert(data, { path = vim.fn.getcwd(), is_tree = true })
+          fs.writeData(data)
+        elseif choice == choices[2] then
+          table.insert(data, { path = vim.fn.getcwd(), is_tree = false })
+          fs.writeData(data)
+        end
+      end)
+    end
   end
 
   return true
 end
 
-M.setup = function()
-  if vim.fn.isdirectory(dirName) == 0 then
-    vim.fn.mkdir(dirName)
-    print 'created dir'
-  end
+M.setup = function(opts)
+  name = opts.name or name
+  max_config_size = opts.max_config_size or max_config_size
+  autoload = opts.autoload or autoload
 
-  writeData {}
+  fs.ensureDir()
+  vim.api.nvim_create_autocmd({ 'DirChanged', 'VimEnter' }, { callback = checkFile })
 end
+
+vim.api.nvim_create_user_command('MyConfManagerLoad', function()
+  if not checkFile(true) then
+    vim.notify 'Config file not found'
+  end
+end, {})
+
+vim.api.nvim_create_user_command('MyConfManagerToggleAutoload', function()
+  autoload = not autoload
+  vim.notify(('Autoload set to %s'):format(autoload), vim.log.levels.INFO)
+end, {})
+
+vim.api.nvim_create_user_command('MyConfManagerTrustedList', function()
+  local data = fs.loadData()
+  require('utils.ui').open_list(data)
+end, {})
 
 return M

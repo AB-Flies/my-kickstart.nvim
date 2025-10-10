@@ -1,1 +1,1 @@
-require('MyConfManager').setup()
+require('MyConfManager').setup {}
