@@ -30,7 +30,7 @@ return {
   {
     dir = relpath 'MyConfManager.nvim/',
     init = function()
-      require('MyConfManager').setup { max_config_size = 3 }
+      require('MyConfManager').setup {}
     end,
   },
 }
