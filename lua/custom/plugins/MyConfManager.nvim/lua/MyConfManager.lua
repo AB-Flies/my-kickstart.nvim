@@ -36,14 +36,14 @@ end
 local function load(path, stat)
   if stat.size > max_config_size then
     vim.ui.select({ 'continue', 'cancel' }, {
-      prompt = ("The config file's size exceeds the limit (%sb): %sb. What to do?"):format(max_config_size, stat.size),
+      prompt = ("The config file's size exceeds the limit (%sB): %sB. What to do?"):format(max_config_size, stat.size),
     }, function(choice)
-      if choice == 'cancel' then
-        return
-      else
+      if choice ~= 'cancel' then
         dofile(path)
       end
     end)
+  else
+    dofile(path)
   end
 end
 
