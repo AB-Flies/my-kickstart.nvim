@@ -2,7 +2,7 @@ local M = {}
 
 M.dirName = vim.fn.stdpath 'data' .. '/MyConfManager'
 M.fileName = M.dirName .. '/trusted.json'
-print(M.dirName)
+
 function M.ensureDir()
   if vim.fn.isdirectory(M.dirName) == 0 then
     vim.fn.mkdir(M.dirName)
