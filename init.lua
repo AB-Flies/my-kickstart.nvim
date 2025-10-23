@@ -642,10 +642,10 @@ require('lazy').setup({
         underline = { severity = vim.diagnostic.severity.ERROR },
         signs = vim.g.have_nerd_font and {
           text = {
-            [vim.diagnostic.severity.ERROR] = '󰅚 ',
-            [vim.diagnostic.severity.WARN] = '󰀪 ',
-            [vim.diagnostic.severity.INFO] = '󰋽 ',
-            [vim.diagnostic.severity.HINT] = '󰌶 ',
+            [vim.diagnostic.severity.ERROR] = ' 󰅚',
+            [vim.diagnostic.severity.WARN] = ' 󰀪',
+            [vim.diagnostic.severity.INFO] = ' 󰋽',
+            [vim.diagnostic.severity.HINT] = ' 󰌶',
           },
         } or {},
         virtual_text = {
@@ -970,6 +970,7 @@ require('lazy').setup({
         return '%2l:%-2v'
       end
 
+      require('mini.pairs').setup()
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
