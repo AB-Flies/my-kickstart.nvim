@@ -6,8 +6,32 @@ end
 --  I promise not to create any merge conflicts in this directory :)
 --
 -- See the kickstart.nvim README for more information
+
+vim.opt.guicursor = {
+  'n-v-c:block', -- Normal, Visual, Command-line: block cursor
+  'i-ci-ve:ver25', -- Insert and related modes: vertical bar
+  'r-cr:hor20', -- Replace modes: horizontal underline
+  'o:hor50', -- Operator-pending: thick underline
+  'sm:block-blinkwait175-blinkoff150-blinkon175',
+}
+
+-- When focus is regained, force Neovim to resend the cursor shape
+vim.api.nvim_create_autocmd('FocusGained', {
+  callback = function()
+    local mode = vim.fn.mode()
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Cmd>redraw!<CR>', true, false, true), 'n', true)
+    -- Optional: re-send current mode explicitly
+    if mode == 'i' then
+      vim.cmd 'set guicursor+=i-ci-ve:ver25'
+    elseif mode == 'n' then
+      vim.cmd 'set guicursor+=n-v-c:block'
+    end
+  end,
+})
+
 return {
   { 'tpope/vim-fugitive' },
+  'mg979/vim-visual-multi',
 
   {
     'neovim/nvim-lspconfig',

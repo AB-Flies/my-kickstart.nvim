@@ -1106,6 +1106,10 @@ require('lazy').setup({
 
 vim.g.editorconfig = true
 
+vim.opt.wrap = true
+vim.opt.linebreak = true
+vim.opt.showbreak = '↪ '
+
 vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = { '*.cpp', '*.hpp', '*.c', '*.h' },
   callback = function()
