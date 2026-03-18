@@ -7,7 +7,22 @@ end
 --
 -- See the kickstart.nvim README for more information
 return {
-  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
+  { 'tpope/vim-fugitive' },
+
+  {
+    'neovim/nvim-lspconfig',
+    opts = {
+      servers = {
+        clangd = {
+          cmd = {
+            'clangd',
+            '--std=c++23',
+          },
+        },
+      },
+    },
+  },
+
   {
     'iamcco/markdown-preview.nvim',
     build = 'cd app && npm install',
@@ -16,27 +31,23 @@ return {
       vim.g.mkdp_auto_start = 0 -- set to 1 if you want auto preview
     end,
   },
-  {
-    'nvim-tree/nvim-tree.lua',
-    version = '*',
-    lazy = false,
-    dependencies = {
-      'nvim-tree/nvim-web-devicons',
-    },
-    config = function()
-      require('nvim-tree').setup {}
-    end,
-  },
+
   {
     dir = relpath 'MyConfManager.nvim/',
     init = function()
       require('MyConfManager').setup {}
     end,
   },
+
   {
     'kevinhwang91/nvim-ufo',
     dependencies = 'kevinhwang91/promise-async',
   },
-}
 
---
+  {
+    'rcarriga/nvim-notify',
+    config = function()
+      vim.notify = require 'notify'
+    end,
+  },
+}

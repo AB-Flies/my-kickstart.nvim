@@ -1,0 +1,59 @@
+return {
+  -- {
+  --   'erl-koenig/theme-hub.nvim',
+  --   dependencies = {
+  --     'nvim-lua/plenary.nvim',
+  --     -- Optional: for themes that use lush (will be notified if a theme requires it)
+  --     -- "rktjmp/lush.nvim"
+  --   },
+  --   config = function()
+  --     require('theme-hub').setup {
+  --       persistent = true,
+  --     }
+  --   end,
+  -- },
+
+  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
+  --
+  { 'folke/tokyonight.nvim', priority = 1000 },
+  --
+  -- { 'olimorris/onedarkpro.nvim', priority = 1000 },
+  --
+  -- { 'EdenEast/nightfox.nvim', priority = 1000 },
+  --
+  -- {
+  --   'uloco/bluloco.nvim',
+  --   lazy = false,
+  --   priority = 1000,
+  --   dependencies = { 'rktjmp/lush.nvim' },
+  -- },
+  --
+  -- {
+  --   'vague-theme/vague.nvim',
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function()
+  --     -- NOTE: you do not need to call setup if you don't want to.
+  --     require('vague').setup {
+  --       -- optional configuration here
+  --     }
+  --   end,
+  -- },
+  -- {
+  --   'rose-pine/neovim',
+  --   name = 'rose-pine',
+  --   priority = 1000,
+  --   config = function()
+  --     require('rose-pine').setup {
+  --       highlight_groups = {
+  --         TelescopeBorder = { fg = 'highlight_high', bg = 'none' },
+  --         TelescopeNormal = { bg = 'none' },
+  --         TelescopePromptNormal = { bg = 'base' },
+  --         TelescopeResultsNormal = { fg = 'subtle', bg = 'none' },
+  --         TelescopeSelection = { fg = 'text', bg = 'base' },
+  --         TelescopeSelectionCaret = { fg = 'rose', bg = 'rose' },
+  --       },
+  --     }
+  --   end,
+  -- },
+}

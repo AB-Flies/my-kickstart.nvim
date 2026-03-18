@@ -153,6 +153,8 @@ vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 vim.opt.tabstop = 2
+vim.opt.expandtab = true
+vim.opt.shiftwidth = 4
 
 -- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
@@ -282,6 +284,7 @@ require('lazy').setup({
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
+      sign_priority = 100,
       signs = {
         add = { text = ' +' },
         change = { text = ' ~' },
@@ -370,6 +373,7 @@ require('lazy').setup({
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
     dependencies = {
+      'andrew-george/telescope-themes',
       'nvim-lua/plenary.nvim',
       { -- If encountering errors, see telescope-fzf-native README for installation instructions
         'nvim-telescope/telescope-fzf-native.nvim',
@@ -421,6 +425,25 @@ require('lazy').setup({
         --   },
         -- },
         -- pickers = {}
+
+        defaults = {
+          prompt_prefix = '   ',
+          selection_caret = ' ',
+          entry_prefix = ' ',
+          sorting_strategy = 'ascending',
+          layout_config = {
+            horizontal = {
+              prompt_position = 'top',
+              preview_width = 0.55,
+            },
+            width = 0.87,
+            height = 0.80,
+          },
+          mappings = {
+            n = { ['q'] = require('telescope.actions').close },
+          },
+        },
+
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -431,6 +454,7 @@ require('lazy').setup({
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require('telescope').load_extension, 'themes')
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
@@ -679,10 +703,39 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {
+          init_options = {
+            fallbackFlags = { '-std=c++23' },
+          },
+          cmd = {
+            'clangd',
+            '--extra-arg=-std=c++23',
+          },
+        },
         -- gopls = {},
+
         pyright = {},
-        -- rust_analyzer = {},
+        rust_analyzer = {},
+
+        -- phpactor = {
+        --   filetypes = { 'php' },
+        --   root_dir = require('lspconfig.util').root_pattern('composer.json', '.git'),
+        -- },
+
+        -- License key should be at ~/intelephense/licence.txt
+        -- NOTE: spelling is licence.txt
+        intelephense = {
+          settings = {
+            intelephense = {
+              diagnostics = {
+                undefinedProperties = false,
+              },
+            },
+          },
+          cmd = { 'intelephense', '--stdio' },
+          filetypes = { 'php' },
+          root_markers = { '.git', 'composer.json' },
+        },
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -691,6 +744,8 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
+
+        lemminx = {},
 
         lua_ls = {
           -- cmd = { ... },
@@ -887,28 +942,28 @@ require('lazy').setup({
     },
   },
 
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    enabled = false,
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
-        styles = {
-          comments = { italic = false }, -- Disable italics in comments
-        },
-      }
-
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
-    end,
-  },
+  -- { -- You can easily change to a different colorscheme.
+  --   -- Change the name of the colorscheme plugin below, and then
+  --   -- change the command in the config to whatever the name of that colorscheme is.
+  --   --
+  --   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+  --   'folke/tokyonight.nvim',
+  --   enabled = true,
+  --   priority = 1000, -- Make sure to load this before all the other start plugins.
+  --   config = function()
+  --     ---@diagnostic disable-next-line: missing-fields
+  --     require('tokyonight').setup {
+  --       styles = {
+  --         comments = { italic = false }, -- Disable italics in comments
+  --       },
+  --     }
+  --
+  --     -- Load the colorscheme here.
+  --     -- Like many other themes, this one has different styles, and you could load
+  --     -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+  --     vim.cmd.colorscheme 'tokyonight-night'
+  --   end,
+  -- },
 
   -- Highlight todo, notes, etc in comments
   {
@@ -1051,6 +1106,29 @@ require('lazy').setup({
 
 vim.g.editorconfig = true
 
-vim.cmd.colorscheme 'catppuccin-mocha'
+vim.api.nvim_create_autocmd('BufWritePre', {
+  pattern = { '*.cpp', '*.hpp', '*.c', '*.h' },
+  callback = function()
+    vim.lsp.buf.format { async = false }
+  end,
+})
+
+vim.cmd.colorscheme 'catppuccin'
+local bg_dark = '#181825'
+local text = '#cdd6f4'
+local prompt = '#2d3149'
+local red = '#f38ba8'
+
+local hl = vim.api.nvim_set_hl
+
+-- Border Colors (matching the background to make them "invisible" or seamless)
+hl(0, 'TelescopeNormal', { fg = text, bg = bg_dark })
+hl(0, 'TelescopeBorder', { fg = bg_dark, bg = bg_dark })
+hl(0, 'TelescopePromptNormal', { bg = prompt })
+hl(0, 'TelescopePromptBorder', { fg = prompt, bg = prompt })
+hl(0, 'TelescopePromptTitle', { fg = bg_dark, bg = red, bold = true })
+hl(0, 'TelescopePreviewTitle', { fg = bg_dark, bg = bg_dark })
+hl(0, 'TelescopeResultsTitle', { fg = bg_dark, bg = bg_dark })
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
